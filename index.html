@@ -218,30 +218,10 @@
       position: relative;
     }
 
-    /* Boom rings */
+    /* Boom rings — burst from within the button, scale relative to it */
     @keyframes boom-ring {
-      0%   { transform: scale(1);    opacity: 0.85; }
-      100% { transform: scale(1.75); opacity: 0; }
-    }
-
-    .submit-wrap::before,
-    .submit-wrap::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 100%; height: 100%;
-      translate: -50% -50%;
-      border: 2.5px solid var(--gold);
-      border-radius: 8px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .submit-wrap.booming::before {
-      animation: boom-ring 0.55s ease-out forwards;
-    }
-    .submit-wrap.booming::after {
-      animation: boom-ring 0.55s ease-out 0.14s forwards;
+      0%   { transform: scale(0.65); opacity: 1; }
+      100% { transform: scale(1.45); opacity: 0; }
     }
 
     .submit-btn {
@@ -258,6 +238,25 @@
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
       white-space: nowrap;
+      position: relative;
+    }
+
+    .submit-btn::before,
+    .submit-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 2.5px solid var(--gold);
+      border-radius: inherit;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .submit-btn.booming::before {
+      animation: boom-ring 0.5s ease-out forwards;
+    }
+    .submit-btn.booming::after {
+      animation: boom-ring 0.5s ease-out 0.13s forwards;
     }
 
     .submit-btn:hover:not(:disabled)  { background: #d4b455; }
@@ -382,7 +381,7 @@
 
   <!-- Top Logo -->
   <div class="logo-top" aria-label="Buman Logo">
-    <img src="images/buman-gold.png" alt="Buman" />
+    <img src="images/buman-gold-cut.png" alt="Buman" />
   </div>
 
   <!-- Main Form Content -->
@@ -410,7 +409,7 @@
       </label>
 
       <label class="radio-label">
-        <input type="radio" name="source" value="Flyer" />
+        <input type="radio" name="source" value="Flyer on street" />
         <span class="dot"></span>
         Flyer
       </label>
@@ -465,13 +464,11 @@
     // Start greyed out
     submitBtn.disabled = true;
 
-    const submitWrap = submitBtn.closest('.submit-wrap');
-
     function triggerBoom() {
-      submitWrap.classList.remove('booming');
-      void submitWrap.offsetWidth; // force reflow to restart animation
-      submitWrap.classList.add('booming');
-      setTimeout(() => submitWrap.classList.remove('booming'), 900);
+      submitBtn.classList.remove('booming');
+      void submitBtn.offsetWidth; // force reflow to restart animation
+      submitBtn.classList.add('booming');
+      setTimeout(() => submitBtn.classList.remove('booming'), 900);
     }
 
     radios.forEach(radio => {
