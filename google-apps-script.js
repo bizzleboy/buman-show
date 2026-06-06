@@ -7,6 +7,13 @@
 //    "Emails"    — email sign-ups (Date, Email)
 // ─────────────────────────────────────────────────────────────────────────────
 
+function doGet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  return ContentService
+    .createTextOutput('Script is connected to: ' + ss.getName())
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
