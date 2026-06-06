@@ -33,7 +33,7 @@
       font-family: 'Roboto', system-ui, sans-serif;
       color: var(--text);
       background-color: var(--bg);
-      background-image: url('images/camo-upscale.jpg');
+      background-image: url('images/camo-upscale.png');
       background-size: cover;
       background-position: center top;
       background-repeat: no-repeat;
@@ -215,6 +215,33 @@
       display: flex;
       justify-content: center;
       margin-top: clamp(14px, 2.2vh, 22px);
+      position: relative;
+    }
+
+    /* Boom rings */
+    @keyframes boom-ring {
+      0%   { transform: scale(1);    opacity: 0.85; }
+      100% { transform: scale(1.75); opacity: 0; }
+    }
+
+    .submit-wrap::before,
+    .submit-wrap::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 100%; height: 100%;
+      translate: -50% -50%;
+      border: 2.5px solid var(--gold);
+      border-radius: 8px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .submit-wrap.booming::before {
+      animation: boom-ring 0.55s ease-out forwards;
+    }
+    .submit-wrap.booming::after {
+      animation: boom-ring 0.55s ease-out 0.14s forwards;
     }
 
     .submit-btn {
@@ -235,7 +262,8 @@
 
     .submit-btn:hover:not(:disabled)  { background: #d4b455; }
     .submit-btn:active:not(:disabled) { transform: scale(0.97); }
-    .submit-btn:disabled              { cursor: default; }
+    .submit-btn:disabled:not(.done)   { background: #2a2a2a; color: #4a4a4a; cursor: not-allowed; }
+    .submit-btn:disabled.done         { cursor: default; }
 
     .submit-btn.done {
       background: #1d6b24;
@@ -424,7 +452,7 @@
 
   <script>
     // ─── Paste your deployed Apps Script URL here ───────────────────────────
-    const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6nBbp_ymUNCRSDDw635_DO5iCDn73HCcLhBfK7ZUs9h-YwWQOnHo1rYX_5cnnzcT7rw/exec';
     // ────────────────────────────────────────────────────────────────────────
 
     const radios     = document.querySelectorAll('input[name="source"]');
@@ -434,10 +462,27 @@
 
     let submitted = false;
 
+    // Start greyed out
+    submitBtn.disabled = true;
+
+    const submitWrap = submitBtn.closest('.submit-wrap');
+
+    function triggerBoom() {
+      submitWrap.classList.remove('booming');
+      void submitWrap.offsetWidth; // force reflow to restart animation
+      submitWrap.classList.add('booming');
+      setTimeout(() => submitWrap.classList.remove('booming'), 900);
+    }
+
     radios.forEach(radio => {
       radio.addEventListener('change', () => {
         labels.forEach(l => l.classList.remove('selected'));
         radio.closest('.radio-label').classList.add('selected');
+
+        if (!submitted) {
+          submitBtn.disabled = false;
+          triggerBoom();
+        }
       });
     });
 
