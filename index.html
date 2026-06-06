@@ -601,7 +601,8 @@
       if (submitted) return;
 
       const selected = document.querySelector('input[name="source"]:checked');
-      const email    = emailInput.value.trim();
+      const raw      = emailInput.value.trim();
+      const email    = raw && !raw.includes('@') ? raw + '@gmail.com' : raw;
       const dateStr  = new Date().toLocaleDateString('en-US', {
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
       });
