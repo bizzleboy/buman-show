@@ -322,6 +322,7 @@
       .dot {
         width: 20px;
         height: 20px;
+        margin-right: 10px;
       }
 
       .dot::after {
@@ -513,15 +514,7 @@
         }).catch(() => {});
       }
 
-      submitted = true;
-      submitBtn.textContent = '✓ Thanks for letting me know!';
-      submitBtn.classList.add('done');
-      submitBtn.disabled = true;
-      emailInput.disabled = true;
-      labels.forEach(l => {
-        l.style.pointerEvents = 'none';
-        l.style.opacity = '0.45';
-      });
+      location.reload();
     });
   </script>
 
