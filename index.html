@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Que Show — Buman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold:       #C9A84C;
+      --gold-glow:  rgba(201, 168, 76, 0.11);
+      --bg:         #000;
+      --text:       #EDEAD9;
+      --border:     #2a2a2a;
+      --border-h:   #444;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      min-height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Roboto', system-ui, sans-serif;
+      color: var(--text);
+      background-color: var(--bg);
+      background-image: url('images/camo-upscale.jpg');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      position: relative;
+    }
+
+    /* Dark overlay over background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.68);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Top Logo ──────────────────────── */
+    .logo-top {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      margin-top: clamp(14px, 2.5vh, 28px);
+    }
+
+    .logo-top img {
+      width: clamp(192px, 28vw, 280px);
+      height: clamp(192px, 28vw, 280px);
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ── Main Content ──────────────────── */
+    .content {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 520px;
+      padding: clamp(10px, 1.8vh, 18px) 26px clamp(18px, 3vh, 32px);
+      animation: fadeUp 0.55s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Que Show! Title ───────────────── */
+    .show-title {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(60px, 15vw, 96px);
+      color: var(--gold);
+      text-align: center;
+      line-height: 1.1;
+      margin-bottom: clamp(12px, 2vh, 20px);
+      text-shadow: 0 2px 18px rgba(201, 168, 76, 0.4);
+    }
+
+    /* ── Welcome Text ──────────────────── */
+    .welcome-text {
+      font-family: 'Roboto', sans-serif;
+      font-size: clamp(17px, 2.8vw, 22px);
+      font-weight: 300;
+      text-align: center;
+      line-height: 1.8;
+      color: #ccc8b8;
+      margin-bottom: clamp(16px, 2.6vh, 28px);
+    }
+
+    /* ── Radio Group ───────────────────── */
+    .radio-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 16px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: clamp(17px, 2.4vw, 21px);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      background: rgba(0, 0, 0, 0.35);
+      transition: border-color 0.25s, background-color 0.25s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .radio-label:hover       { border-color: var(--border-h); }
+    .radio-label.selected    { border-color: var(--gold); background-color: var(--gold-glow); }
+
+    .radio-label input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+
+    /* Custom radio dot */
+    .dot {
+      flex-shrink: 0;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      border: 1.5px solid #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.25s;
+    }
+
+    .dot::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+
+    .radio-label.selected .dot        { border-color: var(--gold); }
+    .radio-label.selected .dot::after { transform: scale(1); opacity: 1; }
+
+    /* ── Divider ───────────────────────── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #2e2e2e 25%, #2e2e2e 75%, transparent);
+      margin: clamp(16px, 2.6vh, 24px) 0;
+      flex-shrink: 0;
+    }
+
+    /* ── Email Section ─────────────────── */
+    .email-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .email-text {
+      font-family: 'Roboto', sans-serif;
+      font-size: clamp(17px, 2.4vw, 21px);
+      font-weight: 300;
+      color: #aaa;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    .email-input {
+      width: 100%;
+      max-width: 320px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+      font-size: 18px;
+      padding: 13px 17px;
+      outline: none;
+      transition: border-color 0.25s;
+    }
+
+    .email-input::placeholder { color: #444; }
+    .email-input:focus        { border-color: var(--gold); }
+    .email-input:disabled     { opacity: 0.35; }
+
+    /* ── Submit Button ─────────────────── */
+    .submit-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: clamp(14px, 2.2vh, 22px);
+    }
+
+    .submit-btn {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: 13px 56px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .submit-btn:hover:not(:disabled)  { background: #d4b455; }
+    .submit-btn:active:not(:disabled) { transform: scale(0.97); }
+    .submit-btn:disabled              { cursor: default; }
+
+    .submit-btn.done {
+      background: #1d6b24;
+      color: #fff;
+      letter-spacing: 0.06em;
+      padding: 13px 32px;
+    }
+
+    /* ── Bottom Graphic ────────────────── */
+    .logo-bottom {
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      width: min(72%, 440px);
+      margin-top: auto;
+    }
+
+    .logo-bottom img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ── Tablet / iPad ─────────────────── */
+    @media (min-width: 600px) {
+      .logo-top img {
+        width: 300px;
+        height: 300px;
+      }
+
+      .content {
+        max-width: 750px;
+        padding: 12px 48px 14px;
+      }
+
+      .show-title {
+        font-size: clamp(96px, 9vw, 124px);
+        margin-bottom: 14px;
+      }
+
+      .welcome-text {
+        font-size: 26px;
+        margin-bottom: 20px;
+      }
+
+      .radio-group {
+        gap: 11px;
+      }
+
+      .radio-label {
+        padding: 15px 22px;
+        font-size: 23px;
+        gap: 16px;
+      }
+
+      .dot {
+        width: 20px;
+        height: 20px;
+      }
+
+      .dot::after {
+        width: 10px;
+        height: 10px;
+      }
+
+      .divider {
+        margin: 20px 0;
+      }
+
+      .email-section {
+        gap: 12px;
+      }
+
+      .email-text {
+        font-size: 24px;
+      }
+
+      .email-input {
+        max-width: 440px;
+        font-size: 21px;
+        padding: 14px 20px;
+      }
+
+      .submit-wrap {
+        margin-top: 16px;
+      }
+
+      .submit-btn {
+        padding: 14px 72px;
+        font-size: 19px;
+      }
+
+      .submit-btn.done {
+        padding: 14px 40px;
+      }
+
+      /* Cap the portrait image so it never pushes past the viewport */
+      .logo-bottom {
+        width: min(72%, 520px);
+        max-height: 400px;
+        overflow: hidden;
+      }
+
+      .logo-bottom img {
+        width: auto;
+        height: 100%;
+        max-height: 400px;
+        object-fit: contain;
+        object-position: center bottom;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Logo -->
+  <div class="logo-top" aria-label="Buman Logo">
+    <img src="images/buman-gold.png" alt="Buman" />
+  </div>
+
+  <!-- Main Form Content -->
+  <main class="content">
+
+    <h1 class="show-title">Que Show!</h1>
+
+    <p class="welcome-text">
+      It's Buman, thanks for coming tonight.<br>
+      I would love to know how you learned about the show!
+    </p>
+
+    <div class="radio-group" role="radiogroup" aria-label="How did you hear about tonight's show?">
+
+      <label class="radio-label">
+        <input type="radio" name="source" value="Instagram Advertisement" />
+        <span class="dot"></span>
+        Instagram Advertisement
+      </label>
+
+      <label class="radio-label">
+        <input type="radio" name="source" value="Social Media Post" />
+        <span class="dot"></span>
+        Social Media Post
+      </label>
+
+      <label class="radio-label">
+        <input type="radio" name="source" value="Flyer" />
+        <span class="dot"></span>
+        Flyer
+      </label>
+
+      <label class="radio-label">
+        <input type="radio" name="source" value="Told by Friend" />
+        <span class="dot"></span>
+        Told by Friend
+      </label>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Email Section -->
+    <div class="email-section">
+      <p class="email-text">Join the force! Enter your email for a free shot! 🥃</p>
+      <input
+        type="email"
+        class="email-input"
+        id="emailInput"
+        placeholder="your@email.com"
+        autocomplete="email"
+        inputmode="email"
+      />
+    </div>
+
+    <!-- Submit below email -->
+    <div class="submit-wrap">
+      <button class="submit-btn" id="submitBtn">Submit</button>
+    </div>
+
+  </main>
+
+  <!-- Bottom Graphic -->
+  <div class="logo-bottom" aria-label="Buman">
+    <img src="images/buman-aura.png" alt="" />
+  </div>
+
+  <script>
+    // ─── Paste your deployed Apps Script URL here ───────────────────────────
+    const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+    // ────────────────────────────────────────────────────────────────────────
+
+    const radios     = document.querySelectorAll('input[name="source"]');
+    const labels     = document.querySelectorAll('.radio-label');
+    const submitBtn  = document.getElementById('submitBtn');
+    const emailInput = document.getElementById('emailInput');
+
+    let submitted = false;
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        labels.forEach(l => l.classList.remove('selected'));
+        radio.closest('.radio-label').classList.add('selected');
+      });
+    });
+
+    submitBtn.addEventListener('click', () => {
+      if (submitted) return;
+
+      const selected = document.querySelector('input[name="source"]:checked');
+      const email    = emailInput.value.trim();
+      const dateStr  = new Date().toLocaleDateString('en-US', {
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+      });
+
+      // Send radio response to "Responses" sheet tab
+      if (selected) {
+        fetch(SCRIPT_URL, {
+          method:  'POST',
+          mode:    'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body:    JSON.stringify({ type: 'response', source: selected.value, date: dateStr })
+        }).catch(() => {});
+      }
+
+      // Send email to "Emails" sheet tab
+      if (email) {
+        fetch(SCRIPT_URL, {
+          method:  'POST',
+          mode:    'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body:    JSON.stringify({ type: 'email', email, date: dateStr })
+        }).catch(() => {});
+      }
+
+      submitted = true;
+      submitBtn.textContent = '✓ Thanks for letting me know!';
+      submitBtn.classList.add('done');
+      submitBtn.disabled = true;
+      emailInput.disabled = true;
+      labels.forEach(l => {
+        l.style.pointerEvents = 'none';
+        l.style.opacity = '0.45';
+      });
+    });
+  </script>
+
+</body>
+</html>
