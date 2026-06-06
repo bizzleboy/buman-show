@@ -192,9 +192,17 @@
       letter-spacing: 0.02em;
     }
 
-    .email-input {
+    .email-wrap {
       width: 100%;
-      max-width: 320px;
+      max-width: 340px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .email-input {
+      flex: 1;
+      min-width: 0;
       background: rgba(0, 0, 0, 0.45);
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -209,6 +217,63 @@
     .email-input::placeholder { color: #444; }
     .email-input:focus        { border-color: var(--gold); }
     .email-input:disabled     { opacity: 0.35; }
+
+    /* ── Email domain suggestion ───────── */
+    .email-suggest {
+      display: none;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .email-suggest.visible { display: block; }
+
+    .suggest-chip {
+      background: rgba(201, 168, 76, 0.08);
+      border: 1px solid var(--gold);
+      border-radius: 5px;
+      color: var(--gold);
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .suggest-caret { font-size: 11px; opacity: 0.7; }
+
+    .suggest-drop {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 4px);
+      min-width: 150px;
+      background: #141414;
+      border: 1px solid #333;
+      border-radius: 6px;
+      list-style: none;
+      z-index: 20;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+
+    .suggest-drop.open { display: block; }
+
+    .suggest-drop li {
+      padding: 11px 14px;
+      color: #ccc;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: 15px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .suggest-drop li:hover,
+    .suggest-drop li:active { background: rgba(201,168,76,0.12); color: var(--gold); }
 
     /* ── Submit Button ─────────────────── */
     .submit-wrap {
@@ -429,14 +494,29 @@
     <!-- Email Section -->
     <div class="email-section">
       <p class="email-text">Join the force! Enter your email for a free shot! 🥃</p>
-      <input
-        type="email"
-        class="email-input"
-        id="emailInput"
-        placeholder="your@email.com"
-        autocomplete="email"
-        inputmode="email"
-      />
+      <div class="email-wrap">
+        <input
+          type="text"
+          class="email-input"
+          id="emailInput"
+          placeholder="your@email.com"
+          autocomplete="off"
+          inputmode="email"
+        />
+        <div class="email-suggest" id="emailSuggest">
+          <button type="button" class="suggest-chip" id="suggestChip">
+            <span id="suggestText">@gmail.com</span>
+            <span class="suggest-caret">▾</span>
+          </button>
+          <ul class="suggest-drop" id="suggestDrop">
+            <li data-domain="@gmail.com">@gmail.com</li>
+            <li data-domain="@yahoo.com">@yahoo.com</li>
+            <li data-domain="@outlook.com">@outlook.com</li>
+            <li data-domain="@hotmail.com">@hotmail.com</li>
+            <li data-domain="@icloud.com">@icloud.com</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- Submit below email -->
@@ -453,13 +533,45 @@
 
   <script>
     // ─── Paste your deployed Apps Script URL here ───────────────────────────
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6nBbp_ymUNCRSDDw635_DO5iCDn73HCcLhBfK7ZUs9h-YwWQOnHo1rYX_5cnnzcT7rw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6SGoSrZdiNSyJ4W2icV8DaSIjBHMahsCB-UnUQC38CSRokXQ2_LE8H0Mx8jmAKRHWhg/exec';
     // ────────────────────────────────────────────────────────────────────────
 
-    const radios     = document.querySelectorAll('input[name="source"]');
-    const labels     = document.querySelectorAll('.radio-label');
-    const submitBtn  = document.getElementById('submitBtn');
-    const emailInput = document.getElementById('emailInput');
+    const radios       = document.querySelectorAll('input[name="source"]');
+    const labels       = document.querySelectorAll('.radio-label');
+    const submitBtn    = document.getElementById('submitBtn');
+    const emailInput   = document.getElementById('emailInput');
+    const emailSuggest = document.getElementById('emailSuggest');
+    const suggestChip  = document.getElementById('suggestChip');
+    const suggestDrop  = document.getElementById('suggestDrop');
+    const suggestText  = document.getElementById('suggestText');
+
+    // ── Email domain suggestion ──────────────────────────────────────────────
+    emailInput.addEventListener('input', () => {
+      const val = emailInput.value;
+      if (val.length > 0 && !val.includes('@')) {
+        emailSuggest.classList.add('visible');
+      } else {
+        emailSuggest.classList.remove('visible');
+        suggestDrop.classList.remove('open');
+      }
+    });
+
+    suggestChip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      suggestDrop.classList.toggle('open');
+    });
+
+    suggestDrop.querySelectorAll('li').forEach(li => {
+      li.addEventListener('click', () => {
+        emailInput.value = emailInput.value.split('@')[0] + li.dataset.domain;
+        suggestText.textContent = li.dataset.domain;
+        suggestDrop.classList.remove('open');
+        emailSuggest.classList.remove('visible');
+      });
+    });
+
+    document.addEventListener('click', () => suggestDrop.classList.remove('open'));
+    // ────────────────────────────────────────────────────────────────────────
 
     let submitted = false;
 
@@ -485,7 +597,7 @@
       });
     });
 
-    submitBtn.addEventListener('click', () => {
+    submitBtn.addEventListener('click', async () => {
       if (submitted) return;
 
       const selected = document.querySelector('input[name="source"]:checked');
@@ -494,26 +606,27 @@
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
       });
 
-      // Send radio response to "Responses" sheet tab
+      const sends = [];
+
       if (selected) {
-        fetch(SCRIPT_URL, {
+        sends.push(fetch(SCRIPT_URL, {
           method:  'POST',
           mode:    'no-cors',
           headers: { 'Content-Type': 'text/plain' },
           body:    JSON.stringify({ type: 'response', source: selected.value, date: dateStr })
-        }).catch(() => {});
+        }));
       }
 
-      // Send email to "Emails" sheet tab
       if (email) {
-        fetch(SCRIPT_URL, {
+        sends.push(fetch(SCRIPT_URL, {
           method:  'POST',
           mode:    'no-cors',
           headers: { 'Content-Type': 'text/plain' },
           body:    JSON.stringify({ type: 'email', email, date: dateStr })
-        }).catch(() => {});
+        }));
       }
 
+      await Promise.all(sends).catch(() => {});
       location.reload();
     });
   </script>

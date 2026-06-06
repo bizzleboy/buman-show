@@ -1,41 +1,41 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  Paste this entire file into the Google Apps Script editor.
-//  File → Save → Deploy → New deployment → Web app
-//
-//  Creates two sheet tabs automatically:
-//    "Responses" — radio button answers (Date, Heard Via)
-//    "Emails"    — email sign-ups (Date, Email)
+//  1. Replace SPREADSHEET_ID below with your Google Sheet ID.
+//     (The long string in your sheet's URL between /d/ and /edit)
+//  2. Paste into Apps Script editor → Save → Deploy → New deployment → Web app
+//     Execute as: Me | Who has access: Anyone
 // ─────────────────────────────────────────────────────────────────────────────
 
+var SPREADSHEET_ID = '1cB-RJJdbxgrls6IyYG_m_i2Uft2U_5CN0W_eD_OFQhg';
+
 function doGet() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   return ContentService
-    .createTextOutput('Script is connected to: ' + ss.getName())
+    .createTextOutput('Connected to: ' + ss.getName())
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
-    var ss   = SpreadsheetApp.getActiveSpreadsheet();
+    var ss   = SpreadsheetApp.openById(SPREADSHEET_ID);
 
-    if (data.type === 'email') {
-      var emailSheet = ss.getSheetByName('Emails');
-      if (!emailSheet) {
-        emailSheet = ss.insertSheet('Emails');
-        emailSheet.appendRow(['Date', 'Email']);
-        emailSheet.getRange(1, 1, 1, 2).setFontWeight('bold');
+    if (data.type === 'response') {
+      var sheet = ss.getSheetByName('Responses');
+      if (!sheet) {
+        sheet = ss.insertSheet('Responses');
+        sheet.appendRow(['Date', 'Heard Via']);
+        sheet.getRange(1, 1, 1, 2).setFontWeight('bold');
       }
-      emailSheet.appendRow([data.date || '', data.email || '']);
+      sheet.appendRow([data.date || '', data.source || '']);
 
-    } else if (data.type === 'response') {
-      var responseSheet = ss.getSheetByName('Responses');
-      if (!responseSheet) {
-        responseSheet = ss.insertSheet('Responses');
-        responseSheet.appendRow(['Date', 'Heard Via']);
-        responseSheet.getRange(1, 1, 1, 2).setFontWeight('bold');
+    } else if (data.type === 'email') {
+      var sheet = ss.getSheetByName('Emails');
+      if (!sheet) {
+        sheet = ss.insertSheet('Emails');
+        sheet.appendRow(['Date', 'Email']);
+        sheet.getRange(1, 1, 1, 2).setFontWeight('bold');
       }
-      responseSheet.appendRow([data.date || '', data.source || '']);
+      sheet.appendRow([data.date || '', data.email || '']);
     }
 
     return ContentService
